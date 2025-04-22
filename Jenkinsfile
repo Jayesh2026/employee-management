@@ -19,6 +19,12 @@ pipeline {
                 url: env.GIT_REPO_URL
             }
         }
+
+        stage('Set gradle permission') {
+            steps {
+                sh 'chmod +x ./gradlew'
+            }
+        }
         
         stage('Build') {
             steps {
