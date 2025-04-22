@@ -1,15 +1,20 @@
 pipeline {
     agent any
     
+    tools {
+        jdk 'JDK21'
+    }
+    
     environment {
         DOCKER_IMAGE = 'emp_management'
-        DOCKER_USERNAME = 'jayesh2026'
+        DOCKER_USERNAME = 'jayesh2026' 
         GIT_REPO_URL = 'https://github.com/Jayesh2026/employee-management.git'
         EMAIL = 'jayesh.savle@bnt-soft.com'
+        JAVA_HOME = tool 'JDK21'
     }
     
     triggers {
-        githubPush() // This enables the GitHub webhook trigger
+        githubPush()
     }
     
     stages {
@@ -19,10 +24,14 @@ pipeline {
                 url: env.GIT_REPO_URL
             }
         }
-
-        stage('Set gradle permission') {
+        
+        stage('Setup') {
             steps {
+                // Set permission with gradlew
                 sh 'chmod +x ./gradlew'
+                
+                // Check Java version to confirm it's working
+                sh 'java -version'
             }
         }
         
@@ -72,7 +81,7 @@ pipeline {
     
     post {
         always {
-            sh 'docker system prune -f'
+            sh 'docker system prune -f || true'
             cleanWs()
         }
         success {
