@@ -21,7 +21,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', 
-                url: env.GIT_REPO_URL
+                    url: env.GIT_REPO_URL
+                sh 'git branch'
             }
         }
         
@@ -91,12 +92,13 @@ pipeline {
         stage('Deploy') {
             when {
                 allOf {
+                    expression { return env.GIT_BRANCH == 'origin/main' || env.BRANCH_NAME == 'main' }
                     expression { return env.DOCKER_AVAILABLE == 'true' }
                 }
             }
             steps {
-                sh 'docker-compose.yml down || true'
-                sh 'docker-compose.yml up -d'
+                sh 'docker-compose down || true'
+                sh 'docker-compose up'
             }
         }
     }
