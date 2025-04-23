@@ -6,7 +6,7 @@ pipeline {
     }
     
     environment {
-        DOCKER_IMAGE = 'emp_management'
+        DOCKER_IMAGE = 'employee_management'
         DOCKER_USERNAME = 'jayesh2026' 
         GIT_REPO_URL = 'https://github.com/Jayesh2026/employee-management.git'
         EMAIL = 'jayesh.savle@bnt-soft.com'
@@ -42,6 +42,15 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
+                }
+            }
+        }
+
+        stage('Test Docker Login') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-credentials', variable: 'DOCKER_AUTH')]) {
+                    sh 'echo $DOCKER_AUTH | docker login -u ${DOCKER_USERNAME} --password-stdin'
+                    sh 'docker logout'
                 }
             }
         }
