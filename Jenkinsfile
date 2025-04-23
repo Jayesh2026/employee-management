@@ -12,7 +12,7 @@ pipeline {
         EMAIL = 'jayesh.savle@bnt-soft.com'
         JAVA_HOME = tool 'JDK21'
     }
-    
+
     triggers {
         githubPush()
     }
@@ -46,18 +46,24 @@ pipeline {
             }
         }
         
-        stage('Check Docker') {
+       stage('Check Docker') {
             steps {
                 script {
-                    env.DOCKER_AVAILABLE = sh(script: 'which docker || echo "false"', returnStdout: true).trim() != "false"
-                    echo "Docker available: ${env.DOCKER_AVAILABLE}"
+                    try {
+                        sh 'docker --version'
+                        echo "Docker is available"
+                        env.DOCKER_AVAILABLE = 'true'
+                    } catch (Exception e) {
+                        echo "Docker is not available: ${e.message}"
+                        env.DOCKER_AVAILABLE = 'false'
+                    }
                 }
             }
         }
-        
+                
         stage('Docker Build') {
             when {
-                expression { return env.DOCKER_AVAILABLE != "false" }
+                expression { return env.DOCKER_AVAILABLE == 'true' }
             }
             steps {
                 sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
@@ -67,7 +73,10 @@ pipeline {
         
         stage('Docker Push') {
             when {
-                branch 'main'
+                allOf {
+                    branch 'main'
+                    expression { return env.DOCKER_AVAILABLE == 'true' }
+                }
             }
             steps {
                 withCredentials([string(credentialsId: 'docker-credentials', variable: 'DOCKER_AUTH')]) {
@@ -82,7 +91,10 @@ pipeline {
         
         stage('Deploy') {
             when {
-                branch 'main'
+                allOf {
+                    branch 'main'
+                    expression { return env.DOCKER_AVAILABLE == 'true' }
+                }
             }
             steps {
                 sh 'docker-compose down || true'
@@ -99,16 +111,24 @@ pipeline {
         success {
             echo 'Pipeline executed successfully!'
             updateGitHubCommitStatus(name: 'Jenkins Build', state: 'SUCCESS', message: 'Build succeeded!')
-            mail to: "${EMAIL}", 
-                 subject: 'Pipeline Success', 
-                 body: 'The pipeline completed successfully.'
+            emailext (
+                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+                to: "${EMAIL}",
+                mimeType: 'text/html'
+            )
         }
         failure {
             echo 'Pipeline execution failed!'
             updateGitHubCommitStatus(name: 'Jenkins Build', state: 'FAILURE', message: 'Build failed!')
-            mail to: "${EMAIL}", 
-                 subject: 'Pipeline Failure', 
-                 body: 'The pipeline build failed. Please check the Jenkins logs.'
+            emailext (
+                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+                to: "${EMAIL}",
+                mimeType: 'text/html'
+            )
         }
     }
 }
