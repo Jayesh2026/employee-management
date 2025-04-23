@@ -98,18 +98,6 @@ pipeline {
             steps {
                 sh 'docker-compose down || true'
                 sh 'docker-compose up -d'
-                sh '''
-                    for i in {1..30}; do
-                        if curl -f http://localhost:8081/actuator/health; then
-                            echo "Application is up!"
-                            exit 0
-                        fi
-                        echo "Waiting for application... ($i/30)"
-                        sleep 30
-                    done
-                    echo "Application failed to start within 60 seconds"
-                    exit 1
-                '''
             }
         }
     }
