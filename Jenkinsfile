@@ -105,7 +105,7 @@ pipeline {
                             exit 0
                         fi
                         echo "Waiting for application... ($i/30)"
-                        sleep 15
+                        sleep 30
                     done
                     echo "Application failed to start within 60 seconds"
                     exit 1
