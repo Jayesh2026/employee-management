@@ -21,7 +21,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', 
-                url: env.GIT_REPO_URL
+                url: env.GIT_REPO_URL,
+                echo "Branch name: ${env.BRANCH_NAME}"
             }
         }
         
@@ -74,7 +75,7 @@ pipeline {
         stage('Docker Push') {
             when {
                 allOf {
-                    branch 'main'
+                    expression { return env.GIT_BRANCH == 'origin/main' || env.BRANCH_NAME == 'main' }
                     expression { return env.DOCKER_AVAILABLE == 'true' }
                 }
             }
