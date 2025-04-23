@@ -92,7 +92,6 @@ pipeline {
         stage('Deploy') {
             when {
                 allOf {
-                    branch 'main'
                     expression { return env.DOCKER_AVAILABLE == 'true' }
                 }
             }
