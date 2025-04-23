@@ -95,8 +95,8 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose down || true'
-                sh 'docker compose up -d'
+                sh 'docker-compose.yml down || true'
+                sh 'docker-compose.yml up -d'
             }
         }
     }
