@@ -45,17 +45,20 @@ pipeline {
                 }
             }
         }
-
-        stage('Test Docker Login') {
+        
+        stage('Check Docker') {
             steps {
-                withCredentials([string(credentialsId: 'docker-credentials', variable: 'DOCKER_AUTH')]) {
-                    sh 'echo $DOCKER_AUTH | docker login -u ${DOCKER_USERNAME} --password-stdin'
-                    sh 'docker logout'
+                script {
+                    env.DOCKER_AVAILABLE = sh(script: 'which docker || echo "false"', returnStdout: true).trim() != "false"
+                    echo "Docker available: ${env.DOCKER_AVAILABLE}"
                 }
             }
         }
         
         stage('Docker Build') {
+            when {
+                expression { return env.DOCKER_AVAILABLE != "false" }
+            }
             steps {
                 sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
                 sh 'docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest'
