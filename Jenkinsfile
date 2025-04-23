@@ -92,13 +92,13 @@ pipeline {
         stage('Deploy') {
             when {
                 allOf {
-                    expression { return env.GIT_BRANCH == 'origin/main' || env.BRANCH_NAME == 'main' }
+                    git branch: 'main'
                     expression { return env.DOCKER_AVAILABLE == 'true' }
                 }
             }
             steps {
                 sh 'docker-compose down || true'
-                sh 'docker-compose up'
+                sh 'docker-compose up -d'
             }
         }
     }
