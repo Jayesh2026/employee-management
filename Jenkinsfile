@@ -110,25 +110,9 @@ pipeline {
         }
         success {
             echo 'Pipeline executed successfully!'
-            updateGitHubCommitStatus(name: 'Jenkins Build', state: 'SUCCESS', message: 'Build succeeded!')
-            emailext (
-                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
-                to: "${EMAIL}",
-                mimeType: 'text/html'
-            )
         }
         failure {
             echo 'Pipeline execution failed!'
-            updateGitHubCommitStatus(name: 'Jenkins Build', state: 'FAILURE', message: 'Build failed!')
-            emailext (
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
-                to: "${EMAIL}",
-                mimeType: 'text/html'
-            )
         }
     }
 }
