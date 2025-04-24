@@ -82,9 +82,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'docker-credentials', variable: 'DOCKER_AUTH')]) {
                     sh 'echo $DOCKER_AUTH | docker login -u ${DOCKER_USERNAME} --password-stdin'
                     sh 'docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${BUILD_NUMBER}'
-                    sh 'docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest'
                     sh 'docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${BUILD_NUMBER}'
-                    sh 'docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest'
                 }
             }
         }
