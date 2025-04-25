@@ -114,13 +114,3 @@ pipeline {
     }
 }
 
-// Helper function to update GitHub commit status
-void updateGitHubCommitStatus(Map args) {
-    step([
-        $class: 'GitHubCommitStatusSetter',
-        reposSource: [$class: 'ManuallyEnteredRepositorySource', url: env.GIT_REPO_URL],
-        contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: args.name],
-        errorHandlers: [[$class: 'ChangingBuildStatusErrorHandler', result: 'UNSTABLE']],
-        statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: args.message, state: args.state]]]
-    ])
-}
