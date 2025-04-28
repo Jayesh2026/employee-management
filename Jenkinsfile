@@ -4,9 +4,8 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'employee_management'
-        DOCKER_USERNAME = 'jayesh2026' 
+        DOCKER_USERNAME = 'devbntnp' 
         GIT_REPO_URL = 'https://github.com/Jayesh2026/employee-management.git'
-        EMAIL = 'jayesh.savle@bnt-soft.com'
     }
 
     triggers {
