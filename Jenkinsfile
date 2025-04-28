@@ -1,16 +1,12 @@
 pipeline {
     agent any
     
-    tools {
-        jdk 'JDK21'
-    }
     
     environment {
         DOCKER_IMAGE = 'employee_management'
         DOCKER_USERNAME = 'jayesh2026' 
         GIT_REPO_URL = 'https://github.com/Jayesh2026/employee-management.git'
         EMAIL = 'jayesh.savle@bnt-soft.com'
-        JAVA_HOME = tool 'JDK21'
     }
 
     triggers {
