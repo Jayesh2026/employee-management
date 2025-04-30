@@ -4,7 +4,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'employee_management'
-        DOCKER_USERNAME = 'devbntnp' 
+        DOCKER_USERNAME = 'jayesh2026' 
         GIT_REPO_URL = 'https://github.com/Jayesh2026/employee-management.git'
     }
 
